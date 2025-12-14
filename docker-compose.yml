@@ -12,8 +12,10 @@ services:
     environment:
       - MONGO_URI=mongodb://mongo:27017
       - DEBUG_MODE=true  # 本番環境では false に設定
+      - LOG_LEVEL=INFO  # DEBUG, INFO, WARNING, ERROR, CRITICAL
     depends_on:
-      - mongo
+      mongo:
+        condition: service_healthy
     volumes:
       - ./backend:/app
 
@@ -30,10 +32,22 @@ services:
     image: mongo:6
     container_name: mongo_db
     restart: always
+    command: ["mongod", "--quiet"]
     ports:
       - "27017:27017"
     volumes:
       - mongo_data:/data/db
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
 volumes:
   mongo_data:
