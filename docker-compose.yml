@@ -11,6 +11,7 @@ services:
       - ./.env 
     environment:
       - MONGO_URI=mongodb://mongo:27017
+      - DEBUG_MODE=true  # 本番環境では false に設定
     depends_on:
       - mongo
     volumes:
