@@ -3,7 +3,6 @@ import json
 import sys
 import os
 from datetime import datetime
-from typing import Any
 
 
 class JsonFormatter(logging.Formatter):
