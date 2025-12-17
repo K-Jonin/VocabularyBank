@@ -5,10 +5,13 @@ import axios, { AxiosInstance, AxiosError, AxiosRequestConfig } from 'axios';
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
+// デフォルトタイムアウト（ms）。環境変数で上書き可能。
+const DEFAULT_TIMEOUT = Number(import.meta.env.VITE_API_TIMEOUT) || 30000;
+
 // axiosインスタンスを作成
 const apiClient: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 10000,
+  timeout: DEFAULT_TIMEOUT,
   headers: {
     'Content-Type': 'application/json',
   },
