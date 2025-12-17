@@ -13,6 +13,7 @@ services:
       - MONGO_URI=mongodb://mongo:27017
       - DEBUG_MODE=true  # 本番環境では false に設定
       - LOG_LEVEL=INFO  # DEBUG, INFO, WARNING, ERROR, CRITICAL
+      - ALLOWED_ORIGINS=http://localhost:5173,http://localhost:3000  # CORS許可オリジン
     depends_on:
       mongo:
         condition: service_healthy
