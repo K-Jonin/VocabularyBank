@@ -1,5 +1,4 @@
 import React from 'react';
-import { useCommon } from '@/hooks/useCommon';
 import styles from './Sidebar.module.scss';
 
 interface SidebarProps {
