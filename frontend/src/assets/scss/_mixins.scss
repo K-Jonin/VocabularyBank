@@ -1,0 +1,28 @@
+@use '@scss/_variables' as *;
+
+// レスポンシブ対応用 Mixin
+@mixin responsive($breakpoint) {
+  @if $breakpoint == sp {
+    @media (min-width: $breakpoint-sp) {
+      @content;
+    }
+  } @else if $breakpoint == pc {
+    @media (min-width: $breakpoint-pc) {
+      @content;
+    }
+  }
+}
+
+// 中央寄せ(position)
+@mixin absolute-center() {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+// 上下中央寄せ(position)
+@mixin absolute-center-top() {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
