@@ -1,6 +1,24 @@
 @use '@scss/_variables' as *;
 @use '@scss/_mixins' as *;
 
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 799;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+.overlay__open {
+  opacity: 1;
+  visibility: visible;
+}
+.overlay__close {
+  opacity: 0;
+  visibility: hidden;
+}
+
 .sidebar {
   width: 90%;
   height: 100svh;
