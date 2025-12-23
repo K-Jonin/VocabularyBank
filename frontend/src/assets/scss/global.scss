@@ -1,0 +1,13 @@
+@use '@scss/_variables' as *;
+@use '@scss/_mixins' as *;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: $font-noto-sans-jp;
+}
+a {
+  text-decoration: none;
+  color: inherit;
+}
