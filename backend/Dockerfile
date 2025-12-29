@@ -11,7 +11,7 @@ COPY . .
 
 # 環境変数 DEBUG_MODE で開発/本番を切り替え
 CMD if [ "$DEBUG_MODE" = "true" ]; then \
-	python -m debugpy --listen 0.0.0.0:5678 -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload; \
+	python -m debugpy --listen 0.0.0.0:5678 -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload; \
 	else \
-	uvicorn main:app --host 0.0.0.0 --port 8000; \
+	uvicorn app.main:app --host 0.0.0.0 --port 8000; \
 	fi

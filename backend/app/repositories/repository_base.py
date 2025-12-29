@@ -3,8 +3,8 @@ from pymongo import MongoClient
 from pymongo.cursor import Cursor
 from pymongo.database import Database
 from typing import ClassVar, Any, Optional
-from utils.string_utility import StringUtility
-import constants
+from app.utils.string_utility import StringUtility
+import app.constants as constants
 
 
 class RepositoryBase:
@@ -22,7 +22,7 @@ class RepositoryBase:
         """
         self.collection_name = collection_name
 
-    def _find_one(self, query: dict[str, object]) -> Optional[dict[str, Any]]:
+    def _find_one(self, query: dict[str, object], fields: dict[str, int] = {}) -> Optional[dict[str, Any]]:
         """
         1件取得
 
@@ -32,9 +32,9 @@ class RepositoryBase:
         Returns:
             取得結果
         """
-        return self.__db[self.collection_name].find_one(query)
+        return self.__db[self.collection_name].find_one(query, fields)
 
-    def _find(self, query: dict[str, object]) -> Cursor:
+    def _find(self, query: dict[str, object], fields: dict[str, int] = {}) -> Cursor:
         """
         取得
 
@@ -44,7 +44,7 @@ class RepositoryBase:
         Returns:
             取得結果
         """
-        return self.__db[self.collection_name].find(query)
+        return self.__db[self.collection_name].find(query, fields)
 
     def _insert_one(self, row: Optional[dict[str, Any]]) -> str:
         """
