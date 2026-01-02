@@ -38,7 +38,7 @@ class ErrorResponse:
         return BasicResponse(
             status=self.__status,
             success=False,
-            data={
+            error={
                 constants.Parameter.Common.PARAM_CODE: self.__code,
                 constants.Parameter.Common.PARAM_MESSAGE: self.__message,
                 constants.Parameter.Common.PARAM_DETAILS: self.__details

@@ -1,5 +1,6 @@
 // src/api/client.ts
 import axios, { AxiosInstance, AxiosError, AxiosRequestConfig } from 'axios';
+import { ApiResponse } from '@/types/api.types';
 
 // 環境変数からAPIベースURLを取得
 const API_BASE_URL =
@@ -49,42 +50,51 @@ apiClient.interceptors.response.use(
 
     return response;
   },
-  (error: AxiosError) => {
+  (error: AxiosError<ApiResponse<any>>) => {
     // エラーハンドリング
     if (error.response) {
       // サーバーがエラーレスポンスを返した場合
       const status = error.response.status;
+      const errorData = error.response.data.error;
 
       switch (status) {
         case 401:
-          // 認証エラー: トークンをクリアしてログインページへ
+          // 認証エラー → ログインページへ
           localStorage.removeItem('authToken');
           window.location.href = '/login';
-          break;
-        case 403:
-          // 権限エラー
-          console.error('Access forbidden');
-          break;
+          return;
+
         case 404:
-          // Not Found
-          console.error('Resource not found');
-          break;
-        case 500:
-          // サーバーエラー
-          console.error('Server error');
-          break;
+          // リソースが見つからない → 404ページへ
+          window.location.href = '/404';
+          return;
+
+        case 403:
+          // 権限不足 → 403ページへ
+          window.location.href = '/forbidden';
+          return;
+
         default:
-          console.error('Error:', error.message);
+          // その他のエラー → エラーページへ
+          const errorInfo = encodeURIComponent(
+            JSON.stringify({
+              status,
+              message: errorData?.message || 'エラーが発生しました',
+              code: errorData?.code,
+            })
+          );
+          window.location.href = `/error?info=${errorInfo}`;
+          return;
       }
     } else if (error.request) {
-      // リクエストは送信されたがレスポンスがない
-      console.error('No response received:', error.request);
+      // ネットワークエラー → エラーページへ
+      window.location.href = '/error?type=network';
+      return;
     } else {
-      // その他のエラー
-      console.error('Error:', error.message);
+      // その他のエラー → エラーページへ
+      window.location.href = '/error?type=unknown';
+      return;
     }
-
-    return Promise.reject(error);
   }
 );
 

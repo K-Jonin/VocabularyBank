@@ -28,6 +28,26 @@
   background-color: $color-primary;
   z-index: 800;
   transition: transform 0.2s ease;
+  ul {
+    width: 100%;
+    height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    li {
+      color: $color-white;
+      cursor: pointer;
+    }
+    .logout {
+      display: flex;
+      align-items: center;
+      svg {
+        font-size: 1.2rem;
+        margin-right: 5px;
+      }
+    }
+  }
 }
 .sidebar__open {
   transform: translateX(0);

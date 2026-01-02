@@ -26,8 +26,8 @@ class TestUserRouter:
         # Assert
         assert response.status_code == 200
         data = response.json()
-        assert constants.Parameter.Common.PARAM_TOKEN in data
-        assert data[constants.Parameter.Common.PARAM_TOKEN] == "test_token_12345"
+        assert constants.Parameter.Common.PARAM_TOKEN in data[constants.Parameter.Common.PARAM_DATA]
+        assert data[constants.Parameter.Common.PARAM_DATA][constants.Parameter.Common.PARAM_TOKEN] == "test_token_12345"
         mock_service_instance.login.assert_called_once()
 
     # ========== 2. 認証失敗 ==========
@@ -53,12 +53,14 @@ class TestUserRouter:
         assert response.status_code == 401
         data = response.json()
         assert data[constants.Parameter.Common.PARAM_SUCCESS] == False
-        assert constants.Parameter.Common.PARAM_CODE in data or constants.Parameter.Common.PARAM_DETAILS in data
+        assert constants.Parameter.Common.PARAM_ERROR in data
+        error = data[constants.Parameter.Common.PARAM_ERROR]
+        assert constants.Parameter.Common.PARAM_CODE in error
 
     # ========== 3. 必須フィールド欠如 ==========
 
     def test_login_missing_email(self, client):
-        """メールアドレスが欠けている場合422エラー"""
+        """メールアドレスが欠けている場合バリデーションエラー"""
         # Act
         response = client.post(
             "/api/v1/users/login",
@@ -69,12 +71,15 @@ class TestUserRouter:
         )
 
         # Assert
-        assert response.status_code == 422
+        assert response.status_code == 200
         data = response.json()
-        assert constants.Parameter.Common.PARAM_DETAILS in data
+        assert data[constants.Parameter.Common.PARAM_SUCCESS] == False
+        assert constants.Parameter.Common.PARAM_ERROR in data
+        error = data[constants.Parameter.Common.PARAM_ERROR]
+        assert constants.Parameter.Common.PARAM_DETAILS in error
 
     def test_login_missing_password(self, client):
-        """パスワードが欠けている場合422エラー"""
+        """パスワードが欠けている場合バリデーションエラー"""
         # Act
         response = client.post(
             "/api/v1/users/login",
@@ -85,12 +90,15 @@ class TestUserRouter:
         )
 
         # Assert
-        assert response.status_code == 422
+        assert response.status_code == 200
         data = response.json()
-        assert constants.Parameter.Common.PARAM_DETAILS in data
+        assert data[constants.Parameter.Common.PARAM_SUCCESS] == False
+        assert constants.Parameter.Common.PARAM_ERROR in data
+        error = data[constants.Parameter.Common.PARAM_ERROR]
+        assert constants.Parameter.Common.PARAM_DETAILS in error
 
     def test_login_empty_email(self, client):
-        """メールアドレスが空の場合422エラー"""
+        """メールアドレスが空の場合バリデーションエラー"""
         # Act
         response = client.post(
             "/api/v1/users/login",
@@ -102,10 +110,12 @@ class TestUserRouter:
         )
 
         # Assert
-        assert response.status_code == 422
+        assert response.status_code == 200
+        data = response.json()
+        assert data[constants.Parameter.Common.PARAM_SUCCESS] == False
 
     def test_login_empty_password(self, client):
-        """パスワードが空の場合422エラー"""
+        """パスワードが空の場合バリデーションエラー"""
         # Act
         response = client.post(
             "/api/v1/users/login",
@@ -117,12 +127,14 @@ class TestUserRouter:
         )
 
         # Assert
-        assert response.status_code == 422
+        assert response.status_code == 200
+        data = response.json()
+        assert data[constants.Parameter.Common.PARAM_SUCCESS] == False
 
     # ========== 4. バリデーションエラー ==========
 
     def test_login_invalid_email_format(self, client):
-        """メールアドレスの形式が不正な場合422エラー"""
+        """メールアドレスの形式が不正な場合バリデーションエラー"""
         # Act
         response = client.post(
             "/api/v1/users/login",
@@ -134,12 +146,15 @@ class TestUserRouter:
         )
 
         # Assert
-        assert response.status_code == 422
+        assert response.status_code == 200
         data = response.json()
-        assert constants.Parameter.Common.PARAM_DETAILS in data
+        assert data[constants.Parameter.Common.PARAM_SUCCESS] == False
+        assert constants.Parameter.Common.PARAM_ERROR in data
+        error = data[constants.Parameter.Common.PARAM_ERROR]
+        assert constants.Parameter.Common.PARAM_DETAILS in error
 
     def test_login_password_below_min_length(self, client):
-        """最小文字数未満のパスワード（7文字）でエラー"""
+        """最小文字数未満のパスワード（7文字）でバリデーションエラー"""
         # Act
         response = client.post(
             "/api/v1/users/login",
@@ -151,4 +166,6 @@ class TestUserRouter:
         )
 
         # Assert
-        assert response.status_code == 422
+        assert response.status_code == 200
+        data = response.json()
+        assert data[constants.Parameter.Common.PARAM_SUCCESS] == False

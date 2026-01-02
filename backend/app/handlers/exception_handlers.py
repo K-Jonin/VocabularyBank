@@ -16,11 +16,11 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
         exc: バリデーションエラー例外
 
     Returns:
-        JSONResponse: エラーレスポンス
+        JSONResponse: エラーレスポンス（200で返す）
     """
 
     return ErrorResponse(
-        HTTPStatus.UNPROCESSABLE_ENTITY,
+        HTTPStatus.OK,
         constants.Message.ERROR_CODE_VALIDATION,
         Message.get_message(constants.Message.ERROR_CODE_VALIDATION),
         __get_errors(exc.errors())

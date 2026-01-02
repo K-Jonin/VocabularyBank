@@ -14,8 +14,10 @@ class BasicResponse:
     __success: bool
     # DTO
     __data: dict[str, Any]
+    # エラー
+    __error: dict[str, Any]
 
-    def __init__(self, status: HTTPStatus, success: bool, data: dict[str, Any] = {}):
+    def __init__(self, status: HTTPStatus, success: bool, data: dict[str, Any] = {}, error: dict[str, Any] = {}):
         """
         コンストラクタ
 
@@ -26,6 +28,7 @@ class BasicResponse:
         self.__status = status
         self.__success = success
         self.__data = data
+        self.__error = error
 
     def create(self) -> JSONResponse:
         """
@@ -38,5 +41,8 @@ class BasicResponse:
         return JSONResponse(
             status_code=self.__status.value,
             content={
-                constants.Parameter.Common.PARAM_SUCCESS: self.__success, **self.__data}
+                constants.Parameter.Common.PARAM_SUCCESS: self.__success,
+                constants.Parameter.Common.PARAM_DATA: self.__data,
+                constants.Parameter.Common.PARAM_ERROR: self.__error
+            }
         )

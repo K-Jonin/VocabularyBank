@@ -106,6 +106,10 @@ class Parameter:
 
         # 成功
         PARAM_SUCCESS: str = "success"
+        # データ
+        PARAM_DATA: str = "data"
+        # エラー
+        PARAM_ERROR: str = "error"
         # エラーコード
         PARAM_CODE: str = "code"
         # メッセージ

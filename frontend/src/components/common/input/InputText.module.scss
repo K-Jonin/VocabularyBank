@@ -1,0 +1,86 @@
+@use '@scss/_variables' as *;
+
+// ========== 基本スタイル ==========
+.base {
+  // 初期化
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: 0;
+  outline: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  // 基本スタイル
+  max-width: 100%;
+  width: 100%;
+}
+
+// ========== バリアント ==========
+.user {
+  padding: 0.75rem 0.75rem 0.75rem 30px;
+  border-bottom: solid 1px $color-primary;
+}
+
+// ========== サイズ ==========
+.small {
+  font-size: 0.875rem;
+}
+
+.medium {
+  font-size: 1rem;
+}
+
+.large {
+  font-size: 1.125rem;
+}
+
+// ========== エラー状態 ==========
+.error {
+  border-color: #dc3545;
+
+  &:focus {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 3px rgba(#dc3545, 0.15);
+  }
+}
+
+// ========== パスワードマスク ==========
+.maskInput {
+  width: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  input {
+    padding-right: 3rem;
+  }
+
+  &.small input {
+    padding-right: 2.5rem;
+  }
+
+  &.large input {
+    padding-right: 3.5rem;
+  }
+}
+
+.maskButton {
+  position: absolute;
+  right: 0.75rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #666;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+
+  svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+}
