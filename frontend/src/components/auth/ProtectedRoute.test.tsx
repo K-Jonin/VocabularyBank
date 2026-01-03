@@ -5,12 +5,13 @@ import { ProtectedRoute } from './ProtectedRoute';
 
 describe('ProtectedRoute', () => {
   beforeEach(() => {
-    localStorage.clear();
+    // Cookieをクリア
+    document.cookie = 'token=; path=/; max-age=0';
   });
 
   it('トークンがある場合、子要素を表示する', () => {
     // Arrange
-    localStorage.setItem('token', 'test-token');
+    document.cookie = 'token=test-token; path=/';
 
     // Act
     render(

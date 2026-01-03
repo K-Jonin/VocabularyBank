@@ -1,4 +1,3 @@
-import pytest
 from unittest.mock import Mock, patch
 from app.services.user_service import UserService
 from app.dtos.user_dto import UserDto

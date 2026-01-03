@@ -2,6 +2,11 @@ import { userService } from '@/api/services/userService';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LoginRequest } from '@/types/index';
+import {
+  setAuthToken,
+  removeAuthToken,
+  isAuthenticated as checkAuth,
+} from '@/utils/cookie';
 
 export const useAuth = () => {
   const navigate = useNavigate();
@@ -27,8 +32,8 @@ export const useAuth = () => {
       }
 
       if (res.data) {
-        // トークン保存
-        localStorage.setItem('token', res.data.token);
+        // トークン保存（cookieに変更）
+        setAuthToken(res.data.token);
         // ページ遷移
         navigate('/');
       }
@@ -44,7 +49,7 @@ export const useAuth = () => {
    * ログアウト
    */
   const logout = () => {
-    localStorage.removeItem('token');
+    removeAuthToken();
     navigate('/login');
   };
 
@@ -52,7 +57,7 @@ export const useAuth = () => {
    * ログイン状態を確認
    */
   const isAuthenticated = (): boolean => {
-    return !!localStorage.getItem('token');
+    return checkAuth();
   };
 
   return { login, logout, isAuthenticated, errorMessage, isLoading };

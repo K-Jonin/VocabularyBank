@@ -34,7 +34,7 @@ describe('PublicRoute', () => {
 
   it('トークンがある場合、ホームページにリダイレクトする', () => {
     // Arrange
-    localStorage.setItem('token', 'test-token');
+    document.cookie = 'token=test-token; path=/';
 
     // Act
     render(

@@ -1,6 +1,7 @@
 // src/api/client.ts
 import axios, { AxiosInstance, AxiosError, AxiosRequestConfig } from 'axios';
 import { ApiResponse } from '@/types/api.types';
+import { getAuthToken, isTokenValid, removeAuthToken } from '@/utils/cookie';
 
 // 環境変数からAPIベースURLを取得
 const API_BASE_URL =
@@ -21,10 +22,17 @@ const apiClient: AxiosInstance = axios.create({
 // リクエストインターセプター（認証トークンの付与など）
 apiClient.interceptors.request.use(
   (config) => {
-    // ローカルストレージからトークンを取得
-    const token = localStorage.getItem('authToken');
+    // トークンの有効性を確認
+    const token = getAuthToken();
 
     if (token) {
+      // トークンが期限切れの場合は削除してリダイレクト
+      if (!isTokenValid()) {
+        removeAuthToken();
+        window.location.href = '/login';
+        return Promise.reject(new Error('Token expired'));
+      }
+
       config.headers.Authorization = `Bearer ${token}`;
     }
 
@@ -60,7 +68,7 @@ apiClient.interceptors.response.use(
       switch (status) {
         case 401:
           // 認証エラー → ログインページへ
-          localStorage.removeItem('authToken');
+          removeAuthToken();
           window.location.href = '/login';
           return;
 

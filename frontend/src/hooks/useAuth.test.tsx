@@ -25,7 +25,8 @@ vi.mock('react-router-dom', async () => {
 describe('useAuth', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    localStorage.clear();
+    // Cookieをクリア
+    document.cookie = 'token=; path=/; max-age=0';
   });
 
   const wrapper = ({ children }: { children: ReactNode }) => (
@@ -55,7 +56,7 @@ describe('useAuth', () => {
           email: 'test@example.com',
           password: 'password123',
         });
-        expect(localStorage.getItem('token')).toBe(mockToken);
+        expect(document.cookie).toContain(`token=${mockToken}`);
         expect(mockNavigate).toHaveBeenCalledWith('/');
         expect(result.current.errorMessage).toBe('');
       });
@@ -143,7 +144,7 @@ describe('useAuth', () => {
   describe('logout', () => {
     it('ログアウト時、トークンを削除してログインページに遷移する', () => {
       // Arrange
-      localStorage.setItem('token', 'test-token');
+      document.cookie = 'token=test-token; path=/';
       const { result } = renderHook(() => useAuth(), { wrapper });
 
       // Act
@@ -152,7 +153,7 @@ describe('useAuth', () => {
       });
 
       // Assert
-      expect(localStorage.getItem('token')).toBeNull();
+      expect(document.cookie).not.toContain('token=');
       expect(mockNavigate).toHaveBeenCalledWith('/login');
     });
   });
@@ -160,7 +161,7 @@ describe('useAuth', () => {
   describe('isAuthenticated', () => {
     it('トークンがある場合、trueを返す', () => {
       // Arrange
-      localStorage.setItem('token', 'test-token');
+      document.cookie = 'token=test-token; path=/';
       const { result } = renderHook(() => useAuth(), { wrapper });
 
       // Act

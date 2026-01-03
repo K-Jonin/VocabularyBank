@@ -1,5 +1,3 @@
-# tests/test_user_router.py
-import pytest
 from unittest.mock import patch
 
 from app import constants
