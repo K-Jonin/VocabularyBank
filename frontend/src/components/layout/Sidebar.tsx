@@ -13,9 +13,11 @@ export const Sidebar: React.FC<SidebarProps> = (props: SidebarProps) => {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
-    await logout();
-    if (authenticated === false) {
+    const success = await logout();
+    if (success) {
       navigate('/login');
+    } else {
+      navigate('/error');
     }
   };
 

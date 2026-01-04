@@ -49,7 +49,6 @@ apiClient.interceptors.response.use(
     if (error.response) {
       // サーバーがエラーレスポンスを返した場合
       const status = error.response.status;
-      const errorData = error.response.data.error;
 
       switch (status) {
         case 401:

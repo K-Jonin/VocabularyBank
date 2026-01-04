@@ -9,8 +9,8 @@ import { userService } from '@/api/services/userService';
 import { LoginRequest } from '@/types/index';
 
 interface AuthContextType {
-  login: (email: string, password: string) => Promise<void>;
-  logout: () => Promise<void>;
+  login: (email: string, password: string) => Promise<boolean>;
+  logout: () => Promise<boolean>;
   errorMessage: string;
   isLoading: boolean;
   authenticated: boolean | null;
@@ -46,6 +46,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
    * @param password パスワード
    */
   const login = async (email: string, password: string) => {
+    let success = false;
     try {
       setIsLoading(true);
       setErrorMessage('');
@@ -55,15 +56,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       if (!res.success) {
         setErrorMessage('メールアドレスまたはパスワードに誤りがあります。');
-        return;
+        return success;
       }
 
       setAuthenticated(true);
+      success = true;
     } catch (err) {
       setErrorMessage('通信エラーが発生しました');
       console.error('エラー:', err);
+      return false;
     } finally {
       setIsLoading(false);
+      return success;
     }
   };
 
@@ -74,9 +78,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       await userService.logout();
       setAuthenticated(false);
+      return true;
     } catch (err) {
       console.error('ログアウトエラー:', err);
       setAuthenticated(false);
+      return false;
     }
   };
 

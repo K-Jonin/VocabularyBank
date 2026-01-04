@@ -16,8 +16,8 @@ export const Login: React.FC = () => {
   /** サブミット */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await login(email, password);
-    if (authenticated) {
+    const success = await login(email, password);
+    if (success) {
       navigate('/');
     }
   };
