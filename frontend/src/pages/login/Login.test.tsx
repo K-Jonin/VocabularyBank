@@ -1,13 +1,19 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import { BrowserRouter } from 'react-router-dom';
 import { Login } from './Login';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/contexts/AuthContext';
 import userEvent from '@testing-library/user-event';
+import type { ReactNode } from 'react';
 
 // useAuthフックをモック化
-vi.mock('@/hooks/useAuth', () => ({
+vi.mock('@/contexts/AuthContext', () => ({
   useAuth: vi.fn(),
 }));
+
+const wrapper = ({ children }: { children: ReactNode }) => (
+  <BrowserRouter>{children}</BrowserRouter>
+);
 
 describe('Login', () => {
   // モックされたuseAuthの型を定義
@@ -23,32 +29,33 @@ describe('Login', () => {
       errorMessage: null,
       isLoading: false,
       isAuthenticated: vi.fn(() => false),
+      authenticated: false,
     });
   });
 
   describe('レンダリング', () => {
     it('ログインフォームの表示確認', () => {
-      render(<Login />);
+      render(<Login />, { wrapper });
       const heading = screen.getByRole('heading', { name: 'Login' });
       expect(heading).toBeInTheDocument();
     });
 
     it('メールアドレス入力欄の表示確認', () => {
-      render(<Login />);
+      render(<Login />, { wrapper });
       const emailInput = screen.getByPlaceholderText('Email');
       expect(emailInput).toBeInTheDocument();
       expect(emailInput).toHaveAttribute('type', 'email');
     });
 
     it('パスワード入力欄の表示確認', () => {
-      render(<Login />);
+      render(<Login />, { wrapper });
       const passwordInput = screen.getByPlaceholderText('Password');
       expect(passwordInput).toBeInTheDocument();
       expect(passwordInput).toHaveAttribute('type', 'password');
     });
 
     it('ログインボタンの表示確認', () => {
-      render(<Login />);
+      render(<Login />, { wrapper });
       const loginButton = screen.getByRole('button', { name: 'Login' });
       expect(loginButton).toBeInTheDocument();
     });
@@ -56,14 +63,14 @@ describe('Login', () => {
 
   describe('入力値の変更', () => {
     it('メールアドレス入力欄の入力確認', async () => {
-      render(<Login />);
+      render(<Login />, { wrapper });
       const emailInput = screen.getByPlaceholderText('Email');
       await userEvent.type(emailInput, 'text@example.com');
       expect(emailInput).toHaveValue('text@example.com');
     });
 
     it('パスワード入力欄の入力確認', async () => {
-      render(<Login />);
+      render(<Login />, { wrapper });
       const passwordInput = screen.getByPlaceholderText('Password');
       await userEvent.type(passwordInput, 'password');
       expect(passwordInput).toHaveValue('password');
@@ -72,7 +79,7 @@ describe('Login', () => {
 
   describe('フォーム送信', () => {
     it('フォーム送信時のlogin関数呼び出し確認', async () => {
-      render(<Login />);
+      render(<Login />, { wrapper });
       await userEvent.type(
         screen.getByPlaceholderText('Email'),
         'text@example.com'
@@ -91,9 +98,10 @@ describe('Login', () => {
         errorMessage: 'メールアドレスまたはパスワードに誤りがあります。',
         isLoading: false,
         isAuthenticated: vi.fn(() => false),
+        authenticated: false,
       });
 
-      render(<Login />);
+      render(<Login />, { wrapper });
 
       expect(screen.getByRole('alert')).toHaveTextContent(
         'メールアドレスまたはパスワードに誤りがあります。'
@@ -101,7 +109,7 @@ describe('Login', () => {
     });
 
     it('エラーメッセージが表示されないことを確認', () => {
-      render(<Login />);
+      render(<Login />, { wrapper });
       expect(screen.getByRole('alert')).toHaveTextContent('');
     });
   });
@@ -114,9 +122,10 @@ describe('Login', () => {
         errorMessage: null,
         isLoading: true,
         isAuthenticated: vi.fn(() => false),
+        authenticated: false,
       });
 
-      render(<Login />);
+      render(<Login />, { wrapper });
 
       const buttons = screen.getAllByRole('button');
       const loginButton = buttons.find(
@@ -126,7 +135,7 @@ describe('Login', () => {
     });
 
     it('isLoading=falseの場合、ボタンが通常状態', () => {
-      render(<Login />);
+      render(<Login />, { wrapper });
 
       const loginButton = screen.getByRole('button', { name: 'Login' });
       expect(loginButton).toBeEnabled();
@@ -135,7 +144,7 @@ describe('Login', () => {
 
   describe('パスワードマスク', () => {
     it('パスワード入力欄のマスク表示ボタン表示確認', () => {
-      render(<Login />);
+      render(<Login />, { wrapper });
       const maskButton = screen.getByRole('button', {
         name: 'パスワードを表示',
       });
@@ -143,7 +152,7 @@ describe('Login', () => {
     });
 
     it('マスク切り替えボタンをクリックでパスワードの表示/非表示', async () => {
-      render(<Login />);
+      render(<Login />, { wrapper });
 
       const maskButton = screen.getByRole('button', {
         name: 'パスワードを表示',

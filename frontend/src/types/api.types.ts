@@ -1,4 +1,4 @@
-import { User, Auth } from './model.types';
+import { User, Message, Auth } from './model.types';
 
 /** 共通のAPIレスポンス型 */
 export interface ApiResponse<T> {
@@ -14,8 +14,12 @@ export interface ErrorResponse {
   details: object | null;
 }
 
+// 共通
+/** メッセージのみレスポンス */
+export type MessageOnlyResponse = ApiResponse<Message>;
+/** 認証レスポンス */
+export type AuthResponse = ApiResponse<Auth>;
+
 // ユーザー関連
 /** ログインリクエスト */
 export type LoginRequest = Pick<User, 'email' | 'password'>;
-/** ログインレスポンス */
-export type LoginResponse = ApiResponse<Auth>;

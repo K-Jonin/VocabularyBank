@@ -1,20 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { IoIosMail } from 'react-icons/io';
 import { RiLockPasswordFill } from 'react-icons/ri';
+import { useNavigate } from 'react-router-dom';
 import styles from './Login.module.scss';
 import { InputText } from '@/components/common/input/InputText';
 import { Button } from '@/components/common/button/Button';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/contexts/AuthContext';
 
 export const Login: React.FC = () => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
-  const { login, errorMessage, isLoading } = useAuth();
+  const navigate = useNavigate();
+  const { login, errorMessage, isLoading, authenticated } = useAuth();
 
   /** サブミット */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     await login(email, password);
+    if (authenticated) {
+      navigate('/');
+    }
   };
 
   return (

@@ -1,14 +1,23 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from './Sidebar.module.scss';
 import { BiLogOut } from 'react-icons/bi';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface SidebarProps {
   isSidebarOpen: boolean;
   setIsSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 export const Sidebar: React.FC<SidebarProps> = (props: SidebarProps) => {
-  const { logout } = useAuth();
+  const { logout, authenticated } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await logout();
+    if (authenticated === false) {
+      navigate('/login');
+    }
+  };
 
   React.useEffect(() => {
     const handleEscKey = (event: KeyboardEvent) => {
@@ -42,7 +51,7 @@ export const Sidebar: React.FC<SidebarProps> = (props: SidebarProps) => {
       `}
       >
         <ul>
-          <li className={styles.logout} onClick={() => logout()}>
+          <li className={styles.logout} onClick={handleLogout}>
             <BiLogOut />
             <span>ログアウト</span>
           </li>

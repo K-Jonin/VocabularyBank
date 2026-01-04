@@ -1,4 +1,5 @@
 from http import HTTPStatus
+from fastapi.responses import JSONResponse
 from app import constants
 from app.responses.basic_response import BasicResponse
 
@@ -28,7 +29,7 @@ class ErrorResponse:
         self.__message = message
         self.__details = details
 
-    def create(self):
+    def create(self) -> JSONResponse:
         """
         レスポンス作成
 

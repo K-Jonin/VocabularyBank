@@ -24,8 +24,18 @@ class TestUserRouter:
         # Assert
         assert response.status_code == 200
         data = response.json()
-        assert constants.Parameter.Common.PARAM_TOKEN in data[constants.Parameter.Common.PARAM_DATA]
-        assert data[constants.Parameter.Common.PARAM_DATA][constants.Parameter.Common.PARAM_TOKEN] == "test_token_12345"
+        # HttpOnly cookieが設定されていることを確認
+        assert "token" in response.cookies
+        # cookieの値を確認
+        cookie = response.cookies["token"]
+        assert cookie == "test_token_12345"
+        # レスポンスボディにはメッセージのみ
+        assert constants.Parameter.Common.PARAM_DATA in data
+        assert "message" in data[constants.Parameter.Common.PARAM_DATA]
+        # Set-Cookieヘッダーの確認
+        set_cookie = response.headers.get("set-cookie")
+        assert "HttpOnly" in set_cookie
+        assert "SameSite" in set_cookie or "samesite" in set_cookie
         mock_service_instance.login.assert_called_once()
 
     # ========== 2. 認証失敗 ==========
@@ -167,3 +177,70 @@ class TestUserRouter:
         assert response.status_code == 200
         data = response.json()
         assert data[constants.Parameter.Common.PARAM_SUCCESS] == False
+
+    # ========== 4. ログアウト ==========
+
+    def test_logout_success(self, client):
+        """正常にログアウトできる"""
+        # Act
+        response = client.post("/api/v1/users/logout")
+
+        # Assert
+        assert response.status_code == 200
+        data = response.json()
+        assert data[constants.Parameter.Common.PARAM_SUCCESS] == True
+        assert constants.Parameter.Common.PARAM_DATA in data
+        assert "message" in data[constants.Parameter.Common.PARAM_DATA]
+        # Set-Cookieヘッダーにcookie削除の指示が含まれている
+        set_cookie_header = response.headers.get("set-cookie", "")
+        assert "token=" in set_cookie_header
+        # Max-Age=0またはexpiresが過去の日時であることを確認
+        assert "Max-Age=0" in set_cookie_header or "max-age=0" in set_cookie_header.lower()
+
+    # ========== 5. 認証確認 ==========
+
+    def test_get_current_user_success(self, client):
+        """有効なトークンで認証確認できる"""
+        # Arrange
+        from app.services.auth_service import create_access_token
+        token = create_access_token({"sub": "test@example.com"})
+
+        # Act
+        response = client.get(
+            "/api/v1/users/me",
+            cookies={"token": token}
+        )
+
+        # Assert
+        assert response.status_code == 200
+        data = response.json()
+        assert data[constants.Parameter.Common.PARAM_SUCCESS] == True
+        assert data[constants.Parameter.Common.PARAM_DATA]["authenticated"] == True
+        assert "email" in data[constants.Parameter.Common.PARAM_DATA]
+
+    def test_get_current_user_no_token(self, client):
+        """トークンなしで認証確認するとエラー"""
+        # Act
+        response = client.get("/api/v1/users/me")
+
+        # Assert
+        assert response.status_code == 200
+        data = response.json()
+        assert data[constants.Parameter.Common.PARAM_SUCCESS] == True
+        assert data[constants.Parameter.Common.PARAM_DATA]["authenticated"] == False
+        assert data[constants.Parameter.Common.PARAM_DATA]["email"] == ""
+
+    def test_get_current_user_invalid_token(self, client):
+        """無効なトークンで認証確認するとエラー"""
+        # Act
+        response = client.get(
+            "/api/v1/users/me",
+            cookies={"token": "invalid_token"}
+        )
+
+        # Assert
+        assert response.status_code == 200
+        data = response.json()
+        assert data[constants.Parameter.Common.PARAM_SUCCESS] == True
+        assert data[constants.Parameter.Common.PARAM_DATA]["authenticated"] == False
+        assert data[constants.Parameter.Common.PARAM_DATA]["email"] == ""

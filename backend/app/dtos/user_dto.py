@@ -1,11 +1,13 @@
 from pydantic import BaseModel, EmailStr, Field
 
 
-class UserResponseDTO(BaseModel):
-    """ユーザーレスポンスDTO"""
+class AuthResponseDto(BaseModel):
+    """ 認証レスポンスDTO """
 
-    # トークン
-    token: str
+    # 認証済み
+    authenticated: bool
+    # メールアドレス
+    email: str
 
 
 class UserDto(BaseModel):

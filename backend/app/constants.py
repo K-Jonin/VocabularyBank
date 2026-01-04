@@ -30,8 +30,9 @@ class App(Constants):
     # DB名
     DB_NAME = os.getenv("DB_NAME", "vocabulary_bank")
     # 秘密鍵
-    SECRET_KEY = os.getenv(
-        "SECRET_KEY", "test-secret-key-for-development-only")
+    SECRET_KEY = os.getenv("SECRET_KEY")
+    if not SECRET_KEY:
+        raise RuntimeError("環境変数[SECRET_KEY]が見つかりません。")
     # アルゴリズム
     ALGORITHM = os.getenv("ALGORITHM", "HS256")
     # アクセストークン有効時間
@@ -61,6 +62,12 @@ class Message:
     ERROR_CODE_FORMAT: str = "E005"
     # エラーコード: ログイン失敗
     ERROR_CODE_LOGIN_FAILED: str = "E006"
+    # エラーコード: 認証必須
+    ERROR_CODE_AUTHENTICATION_REQUIRED: str = "E007"
+    # エラーコード: 無効なトークン
+    ERROR_CODE_INVALID_TOKEN: str = "E008"
+    # エラーコード: 認証失敗
+    ERROR_CODE_AUTH_FAILED: str = "E009"
 
 
 class Db(Constants):
