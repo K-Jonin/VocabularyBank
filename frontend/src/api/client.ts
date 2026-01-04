@@ -1,5 +1,6 @@
 // src/api/client.ts
 import axios, { AxiosInstance, AxiosError, AxiosRequestConfig } from 'axios';
+import { ApiResponse } from '@/types/api.types';
 
 // 環境変数からAPIベースURLを取得
 const API_BASE_URL =
@@ -15,18 +16,12 @@ const apiClient: AxiosInstance = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true,
 });
 
-// リクエストインターセプター（認証トークンの付与など）
+// リクエストインターセプター
 apiClient.interceptors.request.use(
   (config) => {
-    // ローカルストレージからトークンを取得
-    const token = localStorage.getItem('authToken');
-
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-
     // リクエストログ（開発環境のみ）
     if (import.meta.env.DEV) {
       console.log('Request:', config.method?.toUpperCase(), config.url);
@@ -49,7 +44,7 @@ apiClient.interceptors.response.use(
 
     return response;
   },
-  (error: AxiosError) => {
+  (error: AxiosError<ApiResponse<any>>) => {
     // エラーハンドリング
     if (error.response) {
       // サーバーがエラーレスポンスを返した場合
@@ -57,34 +52,22 @@ apiClient.interceptors.response.use(
 
       switch (status) {
         case 401:
-          // 認証エラー: トークンをクリアしてログインページへ
-          localStorage.removeItem('authToken');
+          // 認証エラー → ログインページへ
           window.location.href = '/login';
-          break;
-        case 403:
-          // 権限エラー
-          console.error('Access forbidden');
-          break;
-        case 404:
-          // Not Found
-          console.error('Resource not found');
-          break;
-        case 500:
-          // サーバーエラー
-          console.error('Server error');
-          break;
-        default:
-          console.error('Error:', error.message);
-      }
-    } else if (error.request) {
-      // リクエストは送信されたがレスポンスがない
-      console.error('No response received:', error.request);
-    } else {
-      // その他のエラー
-      console.error('Error:', error.message);
-    }
+          return;
 
-    return Promise.reject(error);
+        case 404:
+          // リソースが見つからない → 404ページへ
+          window.location.href = '/404';
+          return;
+
+        default:
+          // その他のエラー
+          return Promise.reject(error);
+      }
+    } else {
+      return Promise.reject(error);
+    }
   }
 );
 
